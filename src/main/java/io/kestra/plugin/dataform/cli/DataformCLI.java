@@ -30,31 +30,38 @@ import static io.kestra.core.utils.Rethrow.throwFunction;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Execute dataform command"
+    title = "Orchestrate a Dataform project"
 )
 @Plugin(
     examples = {
         @Example(
-            title = "Dataform compile and run project",
+            title = "Compile and run a Dataform project from Git",
+            full = true,
             code = {
                 """
                 id: dataform
                 namespace: dev
                 tasks:
-                  - id: transform
-                    type: io.kestra.plugin.dataform.cli.DataformCLI
-                    beforeCommands:
-                      - cd folder/my_project_folder
-                      - dataform compile
-                    commands:
-                      - dataform run
+                  - id: wdir
+                    type: io.kestra.core.tasks.flows.WorkingDirectory
+                    tasks:
+                      - id: clone_repo
+                        type: io.kestra.plugin.git.Clone
+                        url: https://github.com/dataform-co/dataform-example-project-bigquery                
+
+                      - id: transform
+                        type: io.kestra.plugin.dataform.cli.DataformCLI
+                        beforeCommands:
+                          - dataform compile
+                        commands:
+                          - dataform run --dry-run
                 """
             }
         )
     }
 )
 public class DataformCLI extends Task implements RunnableTask<ScriptOutput> {
-    private static final String DEFAULT_IMAGE = "dataformco/dataform";
+    private static final String DEFAULT_IMAGE = "dataformco/dataform:latest";
 
     @Schema(
         title = "The commands to run before main list of commands"
