@@ -3,6 +3,8 @@ package io.kestra.plugin.dataform.cli;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
+import io.kestra.core.models.tasks.NamespaceFiles;
+import io.kestra.core.models.tasks.NamespaceFilesInterface;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
 import io.kestra.core.runners.RunContext;
@@ -60,7 +62,7 @@ import static io.kestra.core.utils.Rethrow.throwFunction;
         )
     }
 )
-public class DataformCLI extends Task implements RunnableTask<ScriptOutput> {
+public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, NamespaceFilesInterface {
     private static final String DEFAULT_IMAGE = "dataformco/dataform:latest";
 
     @Schema(
@@ -94,6 +96,8 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput> {
     @Builder.Default
     protected DockerOptions docker = DockerOptions.builder().build();
 
+    private NamespaceFiles namespaceFiles;
+
     @Override
     public ScriptOutput run(RunContext runContext) throws Exception {
         return new CommandsWrapper(runContext)
@@ -101,6 +105,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput> {
             .withRunnerType(RunnerType.DOCKER)
             .withDockerOptions(injectDefaults(getDocker()))
             .withEnv(Optional.ofNullable(env).orElse(new HashMap<>()))
+            .withNamespaceFiles(namespaceFiles)
             .withCommands(
                 ScriptService.scriptCommands(
                     List.of("/bin/sh", "-c"),
