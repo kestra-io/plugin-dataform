@@ -42,7 +42,7 @@ import static io.kestra.core.utils.Rethrow.throwFunction;
                 namespace: dev
                 tasks:
                   - id: wdir
-                    type: io.kestra.core.tasks.flows.WorkingDirectory
+                    type: io.kestra.plugin.core.flow.WorkingDirectory
                     tasks:
                       - id: clone_repo
                         type: io.kestra.plugin.git.Clone
