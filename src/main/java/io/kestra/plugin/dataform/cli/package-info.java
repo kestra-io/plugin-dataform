@@ -1,4 +1,5 @@
 @PluginSubGroup(
+    title = "Dataform CLI",
     description = "This sub-group of plugins contains tasks for using Dataform CLI.\n",
     categories = PluginSubGroup.PluginCategory.TOOL
 )
