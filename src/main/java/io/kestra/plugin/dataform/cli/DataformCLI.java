@@ -39,7 +39,7 @@ import static io.kestra.core.utils.Rethrow.throwFunction;
             code = {
                 """
                 id: dataform
-                namespace: dev
+                namespace: company.team
                 tasks:
                   - id: wdir
                     type: io.kestra.plugin.core.flow.WorkingDirectory
