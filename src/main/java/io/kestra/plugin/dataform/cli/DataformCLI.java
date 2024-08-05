@@ -102,7 +102,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
     @PluginProperty
     @Builder.Default
     @Valid
-    private TaskRunner taskRunner = Docker.INSTANCE;
+    private TaskRunner taskRunner = Docker.instance();
 
     @Schema(title = "The task runner container image, only used if the task runner is container-based.")
     @PluginProperty(dynamic = true)
