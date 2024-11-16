@@ -54,7 +54,17 @@ import static io.kestra.core.utils.Rethrow.throwFunction;
                       - id: transform
                         type: io.kestra.plugin.dataform.cli.DataformCLI
                         beforeCommands:
+                          - npm install @dataform/core
                           - dataform compile
+                        env:
+                          GOOGLE_APPLICATION_CREDENTIALS: "sa.json"
+                        inputFiles:
+                          sa.json: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                          .df-credentials.json: |
+                            {
+                              "projectId": "<gcp-project-id>",
+                              "location": "us"
+                            }
                         commands:
                           - dataform run --dry-run
                 """
