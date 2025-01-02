@@ -1,5 +1,6 @@
 package io.kestra.plugin.dataform.cli;
 
+import io.kestra.core.models.property.Property;
 import io.kestra.core.runners.RunContext;
 import io.kestra.core.runners.RunContextFactory;
 import io.kestra.core.utils.IdUtils;
@@ -44,10 +45,10 @@ class DataformCLITest {
 
         runner = dataformBuilder
             .env(Map.of("{{ inputs.environmentKey }}", "{{ inputs.environmentValue }}"))
-            .beforeCommands(List.of(
+            .beforeCommands(Property.of(List.of(
                 "dataform init postgres new_project",
                 "cd new_project"
-            ))
+            )))
             .commands(List.of(
                 "echo \"::{\\\"outputs\\\":{" +
                     "\\\"customEnv\\\":\\\"$" + environmentKey + "\\\"" +
