@@ -3,6 +3,7 @@ package io.kestra.plugin.dataform.cli;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
+import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.*;
 import io.kestra.core.models.tasks.runners.ScriptService;
 import io.kestra.core.models.tasks.runners.TaskRunner;
@@ -49,7 +50,7 @@ import static io.kestra.core.utils.Rethrow.throwFunction;
                     tasks:
                       - id: clone_repo
                         type: io.kestra.plugin.git.Clone
-                        url: https://github.com/dataform-co/dataform-example-project-bigquery                
+                        url: https://github.com/dataform-co/dataform-example-project-bigquery
 
                       - id: transform
                         type: io.kestra.plugin.dataform.cli.DataformCLI
@@ -78,8 +79,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
     @Schema(
         title = "The commands to run before main list of commands"
     )
-    @PluginProperty(dynamic = true)
-    protected List<String> beforeCommands;
+    protected Property<List<String>> beforeCommands;
 
     @Schema(
         title = "The commands to run"
@@ -115,34 +115,35 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
     private TaskRunner taskRunner = Docker.instance();
 
     @Schema(title = "The task runner container image, only used if the task runner is container-based.")
-    @PluginProperty(dynamic = true)
     @Builder.Default
-    private String containerImage = DEFAULT_IMAGE;
+    private Property<String> containerImage = Property.of(DEFAULT_IMAGE);
 
     private NamespaceFiles namespaceFiles;
 
     private Object inputFiles;
 
-    private List<String> outputFiles;
+    private Property<List<String>> outputFiles;
 
     @Override
     public ScriptOutput run(RunContext runContext) throws Exception {
+        var renderedOutputFiles = runContext.render(this.outputFiles).asList(String.class);
+        var renderedBeforeCommands = runContext.render(this.beforeCommands).asList(String.class);
         return new CommandsWrapper(runContext)
             .withWarningOnStdErr(true)
             .withDockerOptions(injectDefaults(getDocker()))
             .withTaskRunner(this.taskRunner)
-            .withContainerImage(this.containerImage)
+            .withContainerImage(runContext.render(this.containerImage).as(String.class).orElse(null))
             .withEnv(Optional.ofNullable(env).orElse(new HashMap<>()))
             .withNamespaceFiles(namespaceFiles)
             .withInputFiles(inputFiles)
-            .withOutputFiles(outputFiles)
+            .withOutputFiles(renderedOutputFiles.isEmpty() ? null : renderedOutputFiles)
             .withCommands(
                 ScriptService.scriptCommands(
                     List.of("/bin/sh", "-c"),
-                    Optional.ofNullable(this.beforeCommands).map(throwFunction(runContext::render)).orElse(null),
+                    renderedBeforeCommands.isEmpty() ? null : renderedBeforeCommands,
                     runContext.render(this.commands)
-                                            )
-                         )
+                )
+            )
             .run();
     }
 
@@ -150,7 +151,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
         if (original == null) {
             return null;
         }
-        
+
         var builder = original.toBuilder();
         if (original.getImage() == null) {
             builder.image(DEFAULT_IMAGE);
