@@ -34,7 +34,7 @@ class DataformCLITest {
             .id(IdUtils.create())
             .type(DataformCLI.class.getName())
             .docker(DockerOptions.builder().image("dataformco/dataform:latest").entryPoint(Collections.emptyList()).build())
-            .commands(List.of("dataform --version"));
+            .commands(Property.of(List.of("dataform --version")));
 
         DataformCLI runner = dataformBuilder.build();
 
@@ -49,12 +49,12 @@ class DataformCLITest {
                 "dataform init postgres new_project",
                 "cd new_project"
             )))
-            .commands(List.of(
+            .commands(Property.of(List.of(
                 "echo \"::{\\\"outputs\\\":{" +
                     "\\\"customEnv\\\":\\\"$" + environmentKey + "\\\"" +
                     "}}::\"",
                 "dataform compile | tr -d ' \n' | xargs -0 -I {} echo '::{\"outputs\":{}}::'"
-            ))
+            )))
             .build();
 
         scriptOutput = runner.run(runContext);
