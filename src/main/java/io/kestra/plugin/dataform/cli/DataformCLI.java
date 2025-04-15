@@ -30,7 +30,7 @@ import java.util.Optional;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Orchestrate a Dataform project"
+    title = "Orchestrate a Dataform project with CLI commands."
 )
 @Plugin(
     examples = {
