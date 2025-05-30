@@ -34,7 +34,7 @@ class DataformCLITest {
             .id(IdUtils.create())
             .type(DataformCLI.class.getName())
             .docker(DockerOptions.builder().image("dataformco/dataform:latest").entryPoint(Collections.emptyList()).build())
-            .commands(Property.of(List.of("dataform --version")));
+            .commands(Property.ofValue(List.of("dataform --version")));
 
         DataformCLI runner = dataformBuilder.build();
 
@@ -45,11 +45,11 @@ class DataformCLITest {
 
         runner = dataformBuilder
             .env(Map.of("{{ inputs.environmentKey }}", "{{ inputs.environmentValue }}"))
-            .beforeCommands(Property.of(List.of(
+            .beforeCommands(Property.ofValue(List.of(
                 "dataform init postgres new_project",
                 "cd new_project"
             )))
-            .commands(Property.of(List.of(
+            .commands(Property.ofValue(List.of(
                 "echo \"::{\\\"outputs\\\":{" +
                     "\\\"customEnv\\\":\\\"$" + environmentKey + "\\\"" +
                     "}}::\"",
