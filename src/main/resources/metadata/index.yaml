@@ -1,0 +1,8 @@
+group: io.kestra.plugin.dataform
+name: "dataform"
+title: "Dataform"
+description: "Plugin Dataform for Kestra"
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
