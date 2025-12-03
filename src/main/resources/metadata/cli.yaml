@@ -1,8 +1,8 @@
 group: io.kestra.plugin.dataform.cli
 name: "cli"
 title: "Dataform CLI"
-description: "This sub-group of plugins contains tasks for using Dataform CLI."
-body: ""
+description: "Tasks that orchestrate Dataform through CLI commands."
+body: "Run the Dataform CLI in Kestra to compile, validate, or execute projects using the required `commands` list; add optional `beforeCommands` for setup, supply credentials or configs via `env` and `inputFiles`, and override the container image or task runner when needed."
 videos: []
 createdBy: "Kestra Core Team"
 managedBy: "Kestra Core Team"
