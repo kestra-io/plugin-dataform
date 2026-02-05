@@ -99,7 +99,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
 
     @Schema(
         title = "Deprecated Docker runner settings",
-        description = "Legacy DockerOptions field; prefer taskRunner. If provided without image or entryPoint, defaults to dataformco/dataform:latest and an empty entrypoint."
+        description = "Legacy DockerOptions field; prefer taskRunner. If provided without image or entryPoint, defaults to `dataformco/dataform:latest` and an empty entrypoint."
     )
     @PluginProperty
     @Deprecated
