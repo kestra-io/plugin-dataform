@@ -31,7 +31,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Schema(
     title = "Run Dataform CLI commands in Kestra",
-    description = "Executes Dataform CLI commands through the configured task runner. Defaults to a container run with image dataformco/dataform:latest; override with taskRunner or containerImage. Supports setup commands, custom env, and namespace/input/output files."
+    description = "Executes Dataform CLI commands through the configured task runner. Defaults to a container run with image `dataformco/dataform:latest`; override with taskRunner or containerImage. Supports setup commands, custom env, and namespace/input/output files."
 )
 @Plugin(
     examples = {
