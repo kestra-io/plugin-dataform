@@ -116,7 +116,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
 
     @Schema(
         title = "Container image for task runner",
-        description = "Used only for container-based task runners; defaults to dataformco/dataform:latest."
+        description = "Used only for container-based task runners; defaults to `dataformco/dataform:latest`."
     )
     @Builder.Default
     private Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
