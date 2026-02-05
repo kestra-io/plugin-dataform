@@ -82,7 +82,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
 
     @Schema(
         title = "Run Dataform CLI commands",
-        description = "Required commands executed sequentially with /bin/sh -c; include your Dataform CLI actions here."
+        description = "Required commands executed sequentially with `/bin/sh -c`; include your Dataform CLI actions here."
     )
     @NotNull
     protected Property<List<String>> commands;
