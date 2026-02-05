@@ -30,7 +30,8 @@ import java.util.Optional;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Orchestrate a Dataform project with CLI commands."
+    title = "Run Dataform CLI commands in Kestra",
+    description = "Executes Dataform CLI commands through the configured task runner. Defaults to a container run with image `dataformco/dataform:latest`; override with taskRunner or containerImage. Supports setup commands, custom env, and namespace/input/output files."
 )
 @Plugin(
     examples = {
@@ -74,18 +75,21 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
     private static final String DEFAULT_IMAGE = "dataformco/dataform:latest";
 
     @Schema(
-        title = "The commands to run before main list of commands"
+        title = "Run setup commands first",
+        description = "Optional commands executed before the main commands in the same working directory and environment."
     )
     protected Property<List<String>> beforeCommands;
 
     @Schema(
-        title = "The commands to run"
+        title = "Run Dataform CLI commands",
+        description = "Required commands executed sequentially with `/bin/sh -c`; include your Dataform CLI actions here."
     )
     @NotNull
     protected Property<List<String>> commands;
 
     @Schema(
-        title = "Additional environment variables for the current process."
+        title = "Additional environment variables",
+        description = "Key-value map merged into the process environment; supports templated values; defaults to an empty map."
     )
     @PluginProperty(
         additionalProperties = String.class,
@@ -94,22 +98,26 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
     protected Map<String, String> env;
 
     @Schema(
-        title = "Deprecated, use 'taskRunner' instead"
+        title = "Deprecated Docker runner settings",
+        description = "Legacy DockerOptions field; prefer taskRunner. If provided without image or entryPoint, defaults to `dataformco/dataform:latest` and an empty entrypoint."
     )
     @PluginProperty
     @Deprecated
     private DockerOptions docker;
 
     @Schema(
-        title = "The task runner to use.",
-        description = "Task runners are provided by plugins, each have their own properties."
+        title = "Select task runner implementation",
+        description = "Defaults to the Docker runner; plugin task runners may expose their own properties."
     )
     @PluginProperty
     @Builder.Default
     @Valid
     private TaskRunner<?> taskRunner = Docker.instance();
 
-    @Schema(title = "The task runner container image, only used if the task runner is container-based.")
+    @Schema(
+        title = "Container image for task runner",
+        description = "Used only for container-based task runners; defaults to `dataformco/dataform:latest`."
+    )
     @Builder.Default
     private Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
 
