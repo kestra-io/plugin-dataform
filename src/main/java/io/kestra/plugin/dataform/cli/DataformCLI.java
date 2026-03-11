@@ -1,28 +1,27 @@
 package io.kestra.plugin.dataform.cli;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.*;
-import io.kestra.core.models.tasks.runners.ScriptService;
 import io.kestra.core.models.tasks.runners.TaskRunner;
 import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.scripts.exec.scripts.models.DockerOptions;
 import io.kestra.plugin.scripts.exec.scripts.models.ScriptOutput;
 import io.kestra.plugin.scripts.exec.scripts.runners.CommandsWrapper;
 import io.kestra.plugin.scripts.runner.docker.Docker;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @SuperBuilder
 @ToString
@@ -40,33 +39,33 @@ import java.util.Optional;
             full = true,
             code = {
                 """
-                id: dataform
-                namespace: company.team
-                tasks:
-                  - id: wdir
-                    type: io.kestra.plugin.core.flow.WorkingDirectory
+                    id: dataform
+                    namespace: company.team
                     tasks:
-                      - id: clone_repo
-                        type: io.kestra.plugin.git.Clone
-                        url: https://github.com/dataform-co/dataform-example-project-bigquery
+                      - id: wdir
+                        type: io.kestra.plugin.core.flow.WorkingDirectory
+                        tasks:
+                          - id: clone_repo
+                            type: io.kestra.plugin.git.Clone
+                            url: https://github.com/dataform-co/dataform-example-project-bigquery
 
-                      - id: transform
-                        type: io.kestra.plugin.dataform.cli.DataformCLI
-                        beforeCommands:
-                          - npm install @dataform/core
-                          - dataform compile
-                        env:
-                          GOOGLE_APPLICATION_CREDENTIALS: "sa.json"
-                        inputFiles:
-                          sa.json: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
-                          .df-credentials.json: |
-                            {
-                              "projectId": "<gcp-project-id>",
-                              "location": "us"
-                            }
-                        commands:
-                          - dataform run --dry-run
-                """
+                          - id: transform
+                            type: io.kestra.plugin.dataform.cli.DataformCLI
+                            beforeCommands:
+                              - npm install @dataform/core
+                              - dataform compile
+                            env:
+                              GOOGLE_APPLICATION_CREDENTIALS: "sa.json"
+                            inputFiles:
+                              sa.json: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                              .df-credentials.json: |
+                                {
+                                  "projectId": "<gcp-project-id>",
+                                  "location": "us"
+                                }
+                            commands:
+                              - dataform run --dry-run
+                    """
             }
         )
     }
