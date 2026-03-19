@@ -1,0 +1,43 @@
+id: all_dataform
+namespace: sanitychecks.plugin-dataform
+
+tasks:
+  - id: dataform
+    type: io.kestra.plugin.dataform.cli.DataformCLI
+    containerImage: "dataformco/dataform:latest"
+    beforeCommands:
+      - "dataform init bigquery dataform_project --default-database localhost --default-location us"
+    outputFiles:
+      - "version.txt"
+      - "compile.json"
+      - "dataform_project/dataform.json"
+      - "dataform_project/package.json"
+      - "dataform_project/package-lock.json"
+      - "dataform_project/definitions/kestra.sqlx"
+    commands:
+      - "dataform --version > version.txt"
+      - |
+        printf 'config { type: "view" }\nselect 1 as id, "localhost" as host\n' > dataform_project/definitions/kestra.sqlx
+      - "cd dataform_project && dataform compile --json > ../compile.json"
+
+  - id: assert
+    type: io.kestra.plugin.core.execution.Assert
+    conditions:
+      - "{{ outputs.dataform.exitCode == 0 }}"
+      - "{{ outputs.dataform.outputFiles['version.txt'] is not null }}"
+      - "{{ outputs.dataform.outputFiles['compile.json'] is not null }}"
+      - "{{ outputs.dataform.outputFiles['dataform_project/dataform.json'] is not null }}"
+      - "{{ outputs.dataform.outputFiles['dataform_project/package.json'] is not null }}"
+      - "{{ outputs.dataform.outputFiles['dataform_project/package-lock.json'] is not null }}"
+      - "{{ outputs.dataform.outputFiles['dataform_project/definitions/kestra.sqlx'] is not null }}"
+      - "{{ read(outputs.dataform.outputFiles['version.txt']) | trim | length > 0 }}"
+      - "{{ read(outputs.dataform.outputFiles['dataform_project/dataform.json']) contains '\"warehouse\": \"bigquery\"' }}"
+      - "{{ read(outputs.dataform.outputFiles['dataform_project/dataform.json']) contains '\"defaultDatabase\": \"localhost\"' }}"
+      - "{{ read(outputs.dataform.outputFiles['dataform_project/package.json']) contains '@dataform/core' }}"
+      - "{{ read(outputs.dataform.outputFiles['compile.json']) contains '\"name\": \"kestra\"' }}"
+      - "{{ read(outputs.dataform.outputFiles['compile.json']) contains '\"database\": \"localhost\"' }}"
+      - "{{ read(outputs.dataform.outputFiles['compile.json']) contains '\"fileName\": \"definitions/kestra.sqlx\"' }}"
+
+finally:
+  - id: purge
+    type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
