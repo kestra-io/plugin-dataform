@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 @KestraTest(startRunner = true)
 class RunnerTest {
     @Test
-    @ExecuteFlow(value = "sanity-checks/all_dataform.yaml", timeout = "PT180S")
+    @ExecuteFlow(value = "sanity-checks/all_dataform.yaml")
     void all_dataform(Execution execution) {
         assertThat(execution.getTaskRunList(), hasSize(3));
         assertThat(execution.getState().getCurrent(), is(State.Type.SUCCESS));
