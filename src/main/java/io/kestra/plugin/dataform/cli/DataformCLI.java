@@ -77,6 +77,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
         title = "Run setup commands first",
         description = "Optional commands executed before the main commands in the same working directory and environment."
     )
+    @PluginProperty(group = "execution")
     protected Property<List<String>> beforeCommands;
 
     @Schema(
@@ -84,13 +85,14 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
         description = "Required commands executed sequentially with `/bin/sh -c`; include your Dataform CLI actions here."
     )
     @NotNull
+    @PluginProperty(group = "main")
     protected Property<List<String>> commands;
 
     @Schema(
         title = "Additional environment variables",
         description = "Key-value map merged into the process environment; supports templated values; defaults to an empty map."
     )
-    @PluginProperty(
+    @PluginProperty(group = "execution", 
         additionalProperties = String.class,
         dynamic = true
     )
@@ -100,7 +102,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
         title = "Deprecated Docker runner settings",
         description = "Legacy DockerOptions field; prefer taskRunner. If provided without image or entryPoint, defaults to `dataformco/dataform:latest` and an empty entrypoint."
     )
-    @PluginProperty
+    @PluginProperty(group = "deprecated")
     @Deprecated
     private DockerOptions docker;
 
@@ -108,7 +110,7 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
         title = "Select task runner implementation",
         description = "Defaults to the Docker runner; plugin task runners may expose their own properties."
     )
-    @PluginProperty
+    @PluginProperty(group = "execution")
     @Builder.Default
     @Valid
     private TaskRunner<?> taskRunner = Docker.instance();
@@ -118,12 +120,16 @@ public class DataformCLI extends Task implements RunnableTask<ScriptOutput>, Nam
         description = "Used only for container-based task runners; defaults to `dataformco/dataform:latest`."
     )
     @Builder.Default
+    @PluginProperty(group = "execution")
     private Property<String> containerImage = Property.ofValue(DEFAULT_IMAGE);
 
+    @PluginProperty(group = "source")
     private NamespaceFiles namespaceFiles;
 
+    @PluginProperty(group = "source")
     private Object inputFiles;
 
+    @PluginProperty(group = "destination")
     private Property<List<String>> outputFiles;
 
     @Override
